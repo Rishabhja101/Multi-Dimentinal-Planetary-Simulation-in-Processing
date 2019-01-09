@@ -3,34 +3,44 @@ Planet[] planets;
 void setup() {
   size(2000, 2000, P2D);
 
-  planets = new Planet[2];
+  planets = new Planet[4];
   planets[0] = new Planet(3);
   planets[1] = new Planet(3);
-  //planets[2] = new Planet(3);
-  //planets[3] = new Planet(3);
+  planets[2] = new Planet(3);
+  planets[3] = new Planet(3);
 
-  planets[0].setLocation(new float[]{ -100, -100, 0 });
-  planets[1].setLocation(new float[]{ 100, 100, 0 });
-  //planets[2].setLocation(new float[]{ 100, -100, 0 });
-  //planets[3].setLocation(new float[]{ 100, 100, 0 });
+  planets[0].setLocation(new float[]{ 0, 0, 0 });
+  planets[1].setLocation(new float[]{ 0, 500, 0 });
+  planets[2].setLocation(new float[]{ 300, 0, 0 });
+  planets[3].setLocation(new float[]{ 0, 0, -400 });
 
- // planets[0].velocity = new float[]{ 1, 1, 0 };
- // planets[1].velocity = new float[]{ 1, -1, 0 };
-  //planets[2].velocity = new float[]{ -1, 1, 0 };
-  //planets[3].velocity = new float[]{ -1, -1, 0 };
+  planets[0].mass = 10000;
+  planets[1].mass = 10;
+  planets[2].mass = 10;
+  planets[3].mass = 50;
+  
+  planets[0].radius = 100;
+  planets[1].radius = 15;
+  planets[2].radius = 15;
+  planets[3].radius = 20;
+
+  planets[0].velocity = new float[]{ 0, 0, 0 };
+  planets[1].velocity = new float[]{ 62, 0, 0 };
+  planets[2].velocity = new float[]{ 0, 70, 0 };
+  planets[3].velocity = new float[]{ 65, 65, 0 };
 
   // planets[0].force = new float[]{ 0, 5, 0 };
 }
 
 void draw() {
   translate(width / 2, height / 2);
-   background(0); 
+  //background(0); 
   stroke(255);
 
   for (int i = 0; i < planets.length; i++) {
-    planets[i].illistrate();
     planets[i].calculateForces(planets);
     planets[i].update();
+    planets[i].illistrate();
   }
 }
 
@@ -42,7 +52,7 @@ class Planet {
   float[] velocity;
   float[] force;
 
-  float G = 1;
+  float G = 10;
   float fps = 10;
 
 
@@ -75,7 +85,8 @@ class Planet {
       this.force[n] = 0;
       for (int i = 0; i < planets.length; i++) {
         if ((this.location[n] - planets[i].location[n]) != 0){
-          this.force[n] += -(this.location[n] - planets[i].location[n]) * (G * planets[i].mass * this.mass) / pow((this.location[n] - planets[i].location[n]), 2);
+          //this.force[n] += -(this.location[n] - planets[i].location[n]) / abs(this.location[n] - planets[i].location[n]) * (G * planets[i].mass * this.mass) / pow((this.location[n] - planets[i].location[n]), 2);
+          this.force[n] += -(this.location[n] - planets[i].location[n]) / abs(this.location[n] - planets[i].location[n]) * (G * planets[i].mass * this.mass) / pow((planets[i].distance(this.location)), 2);
         }
         //if (planets[i].distance(this.location) != 0){
         //  this.force[n] += (this.location[n] - planets[i].location[n]);
@@ -92,8 +103,8 @@ class Planet {
 
   void update() {
     for (int i = 0; i < this.force.length; i++) {
-      this.velocity[i] += this.force[i] / fps;
-      this.location[i] += this.velocity[i];
+      this.velocity[i] += this.force[i] / this.mass;
+      this.location[i] += this.velocity[i] / fps;
     }
   }
 
