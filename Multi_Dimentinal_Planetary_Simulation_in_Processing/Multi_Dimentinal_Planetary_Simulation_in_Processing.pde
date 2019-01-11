@@ -57,10 +57,78 @@ void draw() {
   background(0); 
   stroke(255);
 
+    int dimentions = 3;
+    float[][] rotationMatrixX = new float[dimentions][]; 
+    for (int n = 0; n < rotationMatrixX.length; n++){
+      rotationMatrixX[n] = new float[dimentions];
+      for (int i = 0; i < rotationMatrixX.length; i++){
+        if ((n == 0 && i == 0) ||(n == 1 && i == 1)){
+          rotationMatrixX[n][i] = cos(angle);
+        } 
+        else if(n == 0 && i == 1){
+          rotationMatrixX[n][i] = -sin(angle);
+        }
+        else if(n == 1 && i == 0){
+          rotationMatrixX[n][i] = sin(angle);
+        }
+        else if (n == i){
+          rotationMatrixX[n][i] = 1;
+        }
+        else {
+          rotationMatrixX[n][i] = 0;
+        }
+      }
+    }
+    
+    float[][] rotationMatrixY = new float[dimentions][]; 
+    for (int n = 0; n < rotationMatrixY.length; n++){
+      rotationMatrixY[n] = new float[dimentions];
+      for (int i = 0; i < rotationMatrixY.length; i++){
+        if ((n == 0 && i == 0) ||(n == rotationMatrixY.length - 2 && i == rotationMatrixY.length - 2)){
+          rotationMatrixY[n][i] = cos(angle);
+        } 
+        else if(n == 0 && i == rotationMatrixY.length - 2){
+          rotationMatrixY[n][i] = -sin(angle);
+        }
+        else if(n == rotationMatrixY.length - 2 && i == 0){
+          rotationMatrixY[n][i] = sin(angle);
+        }
+        else if (n == i){
+          rotationMatrixY[n][i] = 1;
+        }
+        else{
+          rotationMatrixY[n][i] = 0;
+        }
+      }
+    }
+    
+    float[][] rotationMatrixZ = new float[dimentions][]; 
+    for (int n = 0; n < rotationMatrixZ.length; n++){
+      rotationMatrixZ[n] = new float[dimentions];
+      for (int i = 0; i < rotationMatrixZ.length; i++){
+        if ((n == rotationMatrixZ.length - 1 && i == rotationMatrixZ.length - 1) ||(n == rotationMatrixZ.length - 2 && i == rotationMatrixZ.length - 2)){
+          rotationMatrixZ[n][i] = cos(angle);
+        } 
+        else if(n == rotationMatrixZ.length - 2 && i == rotationMatrixZ.length - 1){
+          rotationMatrixZ[n][i] = -sin(angle);
+        }
+        else if(n == rotationMatrixZ.length - 1 && i == rotationMatrixZ.length - 2){
+          rotationMatrixZ[n][i] = sin(angle);
+        }
+        else if (n == i){
+          rotationMatrixZ[n][i] = 1;
+        }
+        else{
+          rotationMatrixZ[n][i] = 0;
+        }
+      }
+    }
+
+
   for (int i = 0; i < planets.length; i++) {
     planets[i].calculateForces(planets);
     planets[i].update();
-    planets[i].illistrate();
+    planets[i].illistrate(rotationMatrixX, rotationMatrixY, rotationMatrixZ);
   }
 }
 
@@ -167,79 +235,41 @@ class Planet {
     return productMatrix;
   }
   
-  void multiDimentionalRotation(int angle){
-    int dimentions = this.location.length;
-    float[][] rotationMatrixX = new float[dimentions][]; 
-    for (int n = 0; n < rotationMatrixX.length; n++){
-      rotationMatrixX[n] = new float[dimentions];
-      for (int i = 0; i < rotationMatrixX.length; i++){
-        if ((n == 0 && i == 0) ||(n == 1 && i == 1)){
-          rotationMatrixX[n][i] = cos(angle);
-        } 
-        else if(n == 0 && i == 1){
-          rotationMatrixX[n][i] = -sin(angle);
-        }
-        else if(n == 1 && i == 0){
-          rotationMatrixX[n][i] = sin(angle);
-        }
-        else if (n == i){
-          rotationMatrixX[n][i] = 1;
-        }
-        else {
-          rotationMatrixX[n][i] = 0;
-        }
-      }
+  float[][] formatPoint(float[][] raw){
+    float[][] output = new float[raw[0].length][];
+    for (int i = 0; i < output.length; i++){
+      output[i] = new float[raw.length];
     }
-    
-    float[][] rotationMatrixY = new float[dimentions][]; 
-    for (int n = 0; n < rotationMatrixY.length; n++){
-      rotationMatrixY[n] = new float[dimentions];
-      for (int i = 0; i < rotationMatrixY.length; i++){
-        if ((n == 0 && i == 0) ||(n == rotationMatrixY.length - 2 && i == rotationMatrixY.length - 2)){
-          rotationMatrixY[n][i] = cos(angle);
-        } 
-        else if(n == 0 && i == rotationMatrixY.length - 2){
-          rotationMatrixY[n][i] = -sin(angle);
-        }
-        else if(n == rotationMatrixY.length - 2 && i == 0){
-          rotationMatrixY[n][i] = sin(angle);
-        }
-        else if (n == i){
-          rotationMatrixY[n][i] = 1;
-        }
-        else{
-          rotationMatrixY[n][i] = 0;
-        }
-      }
+    for (int x = 0; x < output.length; x++){
+      for (int y = 0; y < output[0].length; y++){
+        output[x][y] = raw[y][x];
+      }    
     }
-    
-    float[][] rotationMatrixZ = new float[dimentions][]; 
-    for (int n = 0; n < rotationMatrixZ.length; n++){
-      rotationMatrixZ[n] = new float[dimentions];
-      for (int i = 0; i < rotationMatrixZ.length; i++){
-        if ((n == rotationMatrixZ.length - 1 && i == rotationMatrixZ.length - 1) ||(n == rotationMatrixZ.length - 2 && i == rotationMatrixZ.length - 2)){
-          rotationMatrixZ[n][i] = cos(angle);
-        } 
-        else if(n == rotationMatrixZ.length - 2 && i == rotationMatrixZ.length - 1){
-          rotationMatrixZ[n][i] = -sin(angle);
-        }
-        else if(n == rotationMatrixZ.length - 1 && i == rotationMatrixZ.length - 2){
-          rotationMatrixZ[n][i] = sin(angle);
-        }
-        else if (n == i){
-          rotationMatrixZ[n][i] = 1;
-        }
-        else{
-          rotationMatrixZ[n][i] = 0;
-        }
-      }
-    }
+    return output;
   }
 
-  void illistrate() {
+  void illistrate(float[][] rotationX, float[][] rotationY, float[][] rotationZ) {
     stroke(255);
     fill(255);
+    
+    float[][] point = new float[1][];
+    point[0] = this.location;
+    point = formatPoint(point);
+    
+  //  point = multiplyMatrices(rotationY, point);
+  //  point = multiplyMatrices(rotationZ, point);
+    
+   // if (this.location.length == 4){
+   //   float z = 1 / (2 - point[point.length - 1][0]);
+   //   point = multiplyMatrices(new float[][]{ {z, 0, 0, 0}, {0, z, 0, 0}, {0, 0, z, 0} }, point);
+   // }
+    
+    point = multiplyMatrices(projectionMatrix(point, 2), point);
+    point = formatPoint(point);
+    
+    ellipse(point[0][0], -point[0][1], radius*2 / (310 - this.location[2]), radius*2 / (310 - this.location[2]));
+    
    // ellipse(location[0], -location[1], radius*2 / 310, radius*2 / 310);
-    ellipse(location[0], -location[1], radius*2 / (310 - this.location[2]), radius*2 / (310 - this.location[2]));
+   // ellipse(location[0], -location[1], radius*2 / (310 - this.location[2]), radius*2 / (310 - this.location[2]));
   }
 }
