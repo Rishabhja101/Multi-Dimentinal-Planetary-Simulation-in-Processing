@@ -5,15 +5,15 @@ void setup() {
   size(2000, 2000, P2D);
 
   planets = new Planet[500];
-  planets[0] = new Planet(3);
-  planets[1] = new Planet(3);
-  planets[2] = new Planet(3);
-  planets[3] = new Planet(3);
+  planets[0] = new Planet(4);
+  planets[1] = new Planet(4);
+  planets[2] = new Planet(4);
+  planets[3] = new Planet(4);
 
-  planets[0].setLocation(new float[]{ 0, 0, 0 });
-  planets[1].setLocation(new float[]{ -9000, 0, 0 });
-  planets[2].setLocation(new float[]{ 300, 0, 0 });
-  planets[3].setLocation(new float[]{ 0, 500, 0 });
+  planets[0].setLocation(new float[]{ 0, 0, 0 , 0});
+  planets[1].setLocation(new float[]{ -9000, 0, 0 , 0});
+  planets[2].setLocation(new float[]{ 300, 0, 0 , 0});
+  planets[3].setLocation(new float[]{ 0, 500, 0 , 0});
 
   planets[0].mass = 10000;
   planets[1].mass = 0;
@@ -25,28 +25,30 @@ void setup() {
   planets[2].radius = 150;
   planets[3].radius = 150;
 
-  planets[0].velocity = new float[]{ 0, 0, 0 };
-  planets[1].velocity = new float[]{ 0, 23, 0 };
-  planets[2].velocity = new float[]{ 0, 80, 0 };
-  planets[3].velocity = new float[]{ 62, 0, 0 };
+  planets[0].velocity = new float[]{ 0, 0, 0 , 0};
+  planets[1].velocity = new float[]{ 0, 23, 0 , 0};
+  planets[2].velocity = new float[]{ 0, 80, 0 , 0};
+  planets[3].velocity = new float[]{ 62, 0, 0 , 0};
   
   planets[0].affected = false;
  // planets[1].affected = false;
 
   for (int i = 4; i < planets.length; i++) {
-    planets[i] = new Planet(3);
+    planets[i] = new Planet(4);
     if (i % 5 == 10){
  //     planets[i].setLocation(new float[]{ pow(-1, i % 2) * (500 + i), 0, 0 });
     }
     else{
-      planets[i].setLocation(new float[]{ pow(-1, i % 2) * (300 + i), 0,  pow(-1, i % 2) * (i % 3) * 35 });
+      planets[i].setLocation(new float[]{ pow(-1, i % 2) * (300 + i), 0,  pow(-1, i % 2), pow(-1, i % 2) });
+      //planets[i].setLocation(new float[]{ pow(-1, i % 2) * (300 + i), 0,  0 });
      // planets[i].setLocation(new float[]{ pow(1, i % 2) * 800, 400, 0 });
     }
     planets[i].mass = 0.000;
-    planets[i].radius = 150;
+    planets[i].radius = 500;
     //planets[i].velocity = new float[]{ -pow(1, i % 2) * pow((200 + i) * 1.7 * 100000 / pow(200 + i, 2), 0.5), 0, 0 };
     //planets[i].velocity = new float[]{ -pow(1, i % 2) * pow((300 + i) * 1 * 100000 / pow(300 + i, 2), 0.5), 0, 0 };
-    planets[i].velocity = new float[]{ 0, pow(-1, i % 2) * pow((300 + i) * 1.7 * 100000 / pow(300 + i, 2), 0.5), pow(-1, i % 2) * i / 70};
+    planets[i].velocity = new float[]{ 0, pow(-1, i % 2) * pow((300 + i) * 1.7 * 100000 / pow(300 + i, 2), 0.5), pow(-1, i % 2), pow(-1, i % 2) };
+    //planets[i].velocity = new float[]{ 0, pow(-1, i % 2) * pow((300 + i) * 1.7 * 100000 / pow(300 + i, 2), 0.5), 0};
   }
 
   // planets[0].force = new float[]{ 0, 5, 0 };
@@ -57,7 +59,10 @@ void draw() {
   background(0); 
   stroke(255);
 
-    int dimentions = 3;
+    angle += 0.0005;
+    angle = map(mouseX, 0, width, 0, TWO_PI);
+
+    int dimentions = 4;
     float[][] rotationMatrixX = new float[dimentions][]; 
     for (int n = 0; n < rotationMatrixX.length; n++){
       rotationMatrixX[n] = new float[dimentions];
@@ -256,18 +261,21 @@ class Planet {
     point[0] = this.location;
     point = formatPoint(point);
     
-  //  point = multiplyMatrices(rotationY, point);
-  //  point = multiplyMatrices(rotationZ, point);
+  //  point = multiplyMatrices(rotationX, point);
+    point = multiplyMatrices(rotationY, point);
+    point = multiplyMatrices(rotationZ, point);
     
-   // if (this.location.length == 4){
-   //   float z = 1 / (2 - point[point.length - 1][0]);
-   //   point = multiplyMatrices(new float[][]{ {z, 0, 0, 0}, {0, z, 0, 0}, {0, 0, z, 0} }, point);
-   // }
+    if (this.location.length == 4){
+      float z = 1 / (2 - point[point.length - 1][0]);
+      point = multiplyMatrices(new float[][]{ {z, 0, 0, 0}, {0, z, 0, 0}, {0, 0, z, 0} }, point);
+    }
     
     point = multiplyMatrices(projectionMatrix(point, 2), point);
     point = formatPoint(point);
     
-    ellipse(point[0][0], -point[0][1], radius*2 / (310 - this.location[2]), radius*2 / (310 - this.location[2]));
+    //ellipse(point[0][0], -point[0][1], radius*2 / (310 - this.location[2]), radius*2 / (310 - this.location[2]));
+    //ellipse(point[0][0], -point[0][1], radius*2 / (900 - this.location[2]), radius*2 / (900 - this.location[2]));
+    ellipse(point[0][0], -point[0][1], radius*2 / (500 - this.location[2]), radius*2 / (500 - this.location[2]));
     
    // ellipse(location[0], -location[1], radius*2 / 310, radius*2 / 310);
    // ellipse(location[0], -location[1], radius*2 / (310 - this.location[2]), radius*2 / (310 - this.location[2]));
