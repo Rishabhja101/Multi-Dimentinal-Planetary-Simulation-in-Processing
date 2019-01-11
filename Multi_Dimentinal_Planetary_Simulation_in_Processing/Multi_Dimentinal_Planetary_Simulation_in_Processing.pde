@@ -1,4 +1,5 @@
 Planet[] planets;
+float angle = 0;
 
 void setup() {
   size(2000, 2000, P2D);
@@ -129,6 +130,108 @@ class Planet {
       for (int i = 0; i < this.force.length; i++) {
         this.velocity[i] += this.force[i];
         this.location[i] += this.velocity[i] / fps;
+      }
+    }
+  }
+  
+  float[][] projectionMatrix(float[][] point, float scale){
+    float z = 1 / (scale - point[point.length - 1][0]); 
+    float[][] projectionMatrix = new float[point.length - 1][];
+    for (int n = 0; n < projectionMatrix.length; n++){
+      projectionMatrix[n] = new float[point.length];
+      for (int i = 0; i < point.length; i++){
+        if (n == i){
+          projectionMatrix[n][i] = z;
+        }
+        else{
+          projectionMatrix[n][i] = 0;
+        }
+      }
+    }
+    return projectionMatrix;
+  }
+  
+  float[][] multiplyMatrices(float[][] a, float[][] b){
+    float[][] productMatrix = new float[a.length][];
+    for(int i = 0; i < productMatrix.length; i++){
+      productMatrix[i] = new float[b[0].length];
+    }
+    for (int x = 0; x < productMatrix.length; x++){
+      for (int y = 0; y < productMatrix[0].length; y++){
+        productMatrix[x][y] = 0;
+        for (int i = 0; i < b.length; i++){
+          productMatrix[x][y] += a[x][i] * b[i][y];
+        }
+      }    
+    }
+    return productMatrix;
+  }
+  
+  void multiDimentionalRotation(int angle){
+    int dimentions = this.location.length;
+    float[][] rotationMatrixX = new float[dimentions][]; 
+    for (int n = 0; n < rotationMatrixX.length; n++){
+      rotationMatrixX[n] = new float[dimentions];
+      for (int i = 0; i < rotationMatrixX.length; i++){
+        if ((n == 0 && i == 0) ||(n == 1 && i == 1)){
+          rotationMatrixX[n][i] = cos(angle);
+        } 
+        else if(n == 0 && i == 1){
+          rotationMatrixX[n][i] = -sin(angle);
+        }
+        else if(n == 1 && i == 0){
+          rotationMatrixX[n][i] = sin(angle);
+        }
+        else if (n == i){
+          rotationMatrixX[n][i] = 1;
+        }
+        else {
+          rotationMatrixX[n][i] = 0;
+        }
+      }
+    }
+    
+    float[][] rotationMatrixY = new float[dimentions][]; 
+    for (int n = 0; n < rotationMatrixY.length; n++){
+      rotationMatrixY[n] = new float[dimentions];
+      for (int i = 0; i < rotationMatrixY.length; i++){
+        if ((n == 0 && i == 0) ||(n == rotationMatrixY.length - 2 && i == rotationMatrixY.length - 2)){
+          rotationMatrixY[n][i] = cos(angle);
+        } 
+        else if(n == 0 && i == rotationMatrixY.length - 2){
+          rotationMatrixY[n][i] = -sin(angle);
+        }
+        else if(n == rotationMatrixY.length - 2 && i == 0){
+          rotationMatrixY[n][i] = sin(angle);
+        }
+        else if (n == i){
+          rotationMatrixY[n][i] = 1;
+        }
+        else{
+          rotationMatrixY[n][i] = 0;
+        }
+      }
+    }
+    
+    float[][] rotationMatrixZ = new float[dimentions][]; 
+    for (int n = 0; n < rotationMatrixZ.length; n++){
+      rotationMatrixZ[n] = new float[dimentions];
+      for (int i = 0; i < rotationMatrixZ.length; i++){
+        if ((n == rotationMatrixZ.length - 1 && i == rotationMatrixZ.length - 1) ||(n == rotationMatrixZ.length - 2 && i == rotationMatrixZ.length - 2)){
+          rotationMatrixZ[n][i] = cos(angle);
+        } 
+        else if(n == rotationMatrixZ.length - 2 && i == rotationMatrixZ.length - 1){
+          rotationMatrixZ[n][i] = -sin(angle);
+        }
+        else if(n == rotationMatrixZ.length - 1 && i == rotationMatrixZ.length - 2){
+          rotationMatrixZ[n][i] = sin(angle);
+        }
+        else if (n == i){
+          rotationMatrixZ[n][i] = 1;
+        }
+        else{
+          rotationMatrixZ[n][i] = 0;
+        }
       }
     }
   }
